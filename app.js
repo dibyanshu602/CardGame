@@ -64,7 +64,7 @@ async function nextmove(playerno){
         } 
     }); 
     var cardno = pickcard()
-    console.log("Player number "+(playerno)+" move: ")
+    console.log("Player number "+(playerno+1)+" move: ")
     console.log('Card from the center '+cardno)
     var tradecard = prompt("Enter your card number to trade: 1-4 from your deck or 5 to select the center card: ")
     var replacecard// cardno to be traded with
@@ -165,7 +165,7 @@ async function nextmove(playerno){
         }
     }
     else{//if game not over, call for next player's move
-         nextmove((playerno)%n)
+         nextmove((playerno+1)%n)
     }
 }
 
