@@ -34,7 +34,7 @@ function shuffle(){
             userpoints[i]+=cardpoints[cardno]
             playercard.push(cardno)
             if(j<2){
-                console.log('Player '+(i+1)+' : '+(j+1)+' card is '+ cardno)
+                console.log('Player '+(i+1)+' : '+(j+1)+' card is '+ cardpoints[cardno])
             }
         }
         usercards[i]= playercard
@@ -57,7 +57,7 @@ async function nextmove(playerno){
             console.log(err); 
         } 
         else{ 
-            console.log("Result : ", docs);
+            //console.log("Result : ", docs);
             cardstate = docs.cardstate
             userpoints = docs.userpoints
             usercards = docs.usercards 
@@ -65,7 +65,7 @@ async function nextmove(playerno){
     }); 
     var cardno = pickcard()
     console.log("Player number "+(playerno+1)+" move: ")
-    console.log('Card from the center '+cardno)
+    console.log('Card from the center '+ cardpoints[cardno])
     var tradecard = prompt("Enter your card number to trade: 1-4 from your deck or 5 to select the center card: ")
     var replacecard// cardno to be traded with
     if(tradecard < 5){
@@ -87,16 +87,21 @@ async function nextmove(playerno){
     }
     else if(topcard == 8){
         var otherplayer = prompt("Enter the player number to check one card from the deck")
-        var seecard = promt("Enter his card number to see")
-        console.log('The card value is'+ cardpoints[usercards[otherplayer][seecard-1]])
+        if(otherplayer!=playerno+1){
+            var seecard = prompt("Enter his card number to see")
+            console.log('The card value is'+ cardpoints[usercards[otherplayer-1][seecard-1]])
+        }
+        else{
+            console.log("You can't check your own card using 8. Wrong move.")
+        }
     }
     else if(topcard == 9){
-        var otherplayer = prompt("Enter the player number to exchange one card from the deck")
+        var otherplayer = prompt("Enter the player number to exchange one card from the deck ")
         var seecard = prompt("Enter his card number")
         var myseecard = prompt("Enter you card number to exchange")
-        var tempcardno1 = usercards[otherplayer][seecard-1]
+        var tempcardno1 = usercards[otherplayer-1][seecard-1]
         var tempcardno2 = usercards[playerno][tempcardno-1]
-        usercards[otherplayer][seecard-1] = tempcardno2
+        usercards[otherplayer-1][seecard-1] = tempcardno2
         usercards[playerno][tempcardno-1] = tempcardno1
         userpoints[playerno] += cardpoints[tempcardno2] - cardpoints[tempcardno1]
         userpoints[otherplayer-1] += cardpoints[tempcardno1] - cardpoints[tempcardno2] 
@@ -106,13 +111,13 @@ async function nextmove(playerno){
     var k
     for(k = 0; k<n; k++){
         console.log("For player number "+(k+1))
-        var tot = prompt('Enter number of cards')
+        var tot = prompt('Enter number of matching cards you want to put in the center ')
         var m
         for(m = 0; m<tot; m++){
-            var deckcard = prompt("Enter the cardnumber to put into the deck")
-            var thecard = usercards[k+1][deckcard-1]
+            var deckcard = prompt("Enter the cardnumber to put into the deck ")
+            var thecard = usercards[k][deckcard-1]
             if(thecard!=0 && cardpoints[thecard]==topcard){
-                usercards[k+1][deckcard-1] = 0
+                usercards[k][deckcard-1] = 0
                 cardstate[thecard] = 0
                 userpoints[k] -= cardpoints[thecard]
                 console.log("Done")
@@ -129,7 +134,7 @@ async function nextmove(playerno){
         var sum=0
         var m
         for(m=0; m<4; m++){
-            if(usercards[k+1][m]>0){
+            if(usercards[k][m]>0){
                 sum=1;
                 break;
             }
@@ -141,6 +146,7 @@ async function nextmove(playerno){
     }
 
     //Updating DB
+    var obid = "5f9b1744625d7a43dc4c3915"
     var iroom = {
         n : n,
         cardstate : cardstate,
@@ -148,12 +154,12 @@ async function nextmove(playerno){
         usercards : usercards
     }
     await roomexp.findOneAndUpdate(obid, iroom, function (err, docs) {
-        console.log("After") 
+        //console.log("After") 
         if (err){ 
             console.log(err); 
         } 
         else{ 
-            console.log("Result : ", docs); 
+            //console.log("Result : ", docs); 
         } 
     });
 
@@ -186,23 +192,23 @@ async function startgame(){
             usercards : usercards
         }
         var obid = "5f9b1744625d7a43dc4c3915"
-        console.log('before')
+        //console.log('before')
         await shuffle();
         console.log(iroom)
         await roomexp.findOneAndUpdate(obid, iroom, function (err, docs) {
-            console.log("After") 
+            //console.log("After") 
             if (err){ 
                 console.log(err); 
             } 
             else{ 
-                console.log("Result : ", docs); 
+                //console.log("Result : ", docs); 
             } 
         }); 
         await nextmove(0)
     }
     else{
         console.log("3-6 players are allowed to play the game")
-        //startgame()
+        startgame()
     }
 }
 

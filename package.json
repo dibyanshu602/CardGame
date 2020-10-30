@@ -14,7 +14,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "server": "nodemon server.js"
+    "server": "nodemon app.js"
   },
   "repository": {
     "type": "git",
